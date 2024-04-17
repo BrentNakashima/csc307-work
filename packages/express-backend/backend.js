@@ -109,17 +109,28 @@ app.get("/users/:id", (req, res) => {
      res.status(400).json({error: "No name or job"});
    }
  });
+function randomId() {
+  return Math.floor(Math.random()
+  * (Math.floor(999) - Math.ceil(0) + 1)) + Math.ceil(0);
+}
+// Edit to add the random id in
 const addUser = (user) => {
-  users["users_list"].push(user);
-  return user;
+  const newUser = {
+    id: randomId().toString(),
+    name: user.name,
+    job: user.job,
+  }
+  users["users_list"].push(newUser);
+  return newUser;
 };
-
-
 app.post("/users", (req, res) => {
   const userToAdd = req.body;
   addUser(userToAdd);
-  res.send();
+  // Change to a 201 response
+  //res.send();
+  res.status(201).json(userToAdd);
 });
+
 app.listen(port, () => {
     console.log(
         `Example app listening at http://localhost:${port}`
