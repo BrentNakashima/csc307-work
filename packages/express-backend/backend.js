@@ -1,9 +1,13 @@
 // backend.js
+// ON END OF STEP 2
 import express from "express";
+import cors from "cors";
 
 // Create instance of express
 const app = express();
 const port = 8000;
+// Enable all CORS requests
+app.use(cors());
 // Set express app to process data in JSON format
 app.use(express.json());
 
@@ -30,6 +34,11 @@ const users = {
         job: "Aspring actress"
       },
       {
+        id: "test",
+        name: "Dee",
+        job: "Tester"
+      },
+      {
         id: "zap555",
         name: "Dennis",
         job: "Bartender"
@@ -42,30 +51,75 @@ const users = {
     );
   };
 // First API endpoint
-app.get("/users", (req, res) => {
-  const name = req.query.name;
-  if (name != undefined) {
-    let result = findUserByName(name);
-    result = { users_list: result };
-    res.send(result);
-  } else {
+ app.get("/users", (req, res) => {
+   const name = req.query.name;
+   if (name != undefined) {
+     let result = findUserByName(name);
+     result = { users_list: result };
+     res.send(result);
+   } else {
     res.send(users);
-  }
-});
+   }
+ });
 
 const findUserById = (id) =>
   users["users_list"].find((user) => user["id"] === id);
-
+// for finding user by id
 app.get("/users/:id", (req, res) => {
-  const id = req.params["id"]; //or req.params.id
-  let result = findUserById(id);
-  if (result === undefined) {
-    res.status(404).send("Resource not found.");
-  } else {
-    res.send(result);
-  }
-});
+   const id = req.params["id"]; //or req.params.id
+   let result = findUserById(id);
+   if (result === undefined) {
+     res.status(404).send("Resource not found.");
+   } else {
+     res.send(result);
+   }
+ });
+ // Step 7: Implement DELETE by id
+ app.delete("/users/:id", (req, res) => {
+   const id = req.params["id"]; // get the id in the url
+   const index = users["users_list"].findIndex((user) => user.id === id);
+   if (index !== -1) {
+      // Delete user
+      users["users_list"].splice(index, 1);
+      res.status(200).json({message: 'Deleted'});
+   } else {
+     res.status(404).json({error: 'User not found'});
+   }
+ });
+ // Step 7: Implement get for name and job
+ // Example query /users?name=Brent&job=Student
+ const findUserByNameAndJob = (name, job) => {
+  return users["users_list"].filter(
+    (user) => (user["name"] === name && user["job"] === job));
+ };
+// changed from /users to find
+ app.get("/find", (req, res) => {
+   const name = req.query.name;
+   const job = req.query.job;
+   if (name != undefined && job != undefined) {
+     let result = findUserByNameAndJob(name, job);
+     if (result.length > 0) {
+       res.status(200).json(result);
+     } else {
+       // No user found
+       res.status(404).json({error: "No user found"});
+     }
+   } else {
+     // Name or job is undefined error case
+     res.status(400).json({error: "No name or job"});
+   }
+ });
+const addUser = (user) => {
+  users["users_list"].push(user);
+  return user;
+};
 
+
+app.post("/users", (req, res) => {
+  const userToAdd = req.body;
+  addUser(userToAdd);
+  res.send();
+});
 app.listen(port, () => {
     console.log(
         `Example app listening at http://localhost:${port}`
