@@ -27,9 +27,24 @@ function MyApp() {
         deleteUser(id); // ERROR: HOW DO I GET ID  
     };
    
+    // function updateList(person) { 
+    //   postUser(person)
+    //     .then(() => setCharacters([...characters, person]))
+    //     .catch((error) => {
+    //       console.log(error);
+    //     })
+    // }
     function updateList(person) { 
       postUser(person)
-        .then(() => setCharacters([...characters, person]))
+        .then((response) => {
+          // Only update if 201 message received
+          if (response.status === 201) {
+            setCharacters([...characters, person]);
+            console.log('User added');
+          } else {
+            console.error('Error adding user');
+          }
+        })
         .catch((error) => {
           console.log(error);
         })
