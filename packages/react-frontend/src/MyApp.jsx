@@ -14,17 +14,17 @@ function MyApp() {
     }, [] );
     // Edit for delete on backend
     function removeOneCharacter(index) {
-        let id;
+        let _id;
         // This function creates a new array excluding removed
         const updated = characters.filter((character, i) => {
           if(i === index) {
-            id = character.id;
+            _id = character._id;
           }
           return i !== index;
         }); 
          
         setCharacters(updated);
-        deleteUser(id); // ERROR: HOW DO I GET ID  
+        deleteUser(_id); // ERROR: HOW DO I GET ID  
     };
    
     // function updateList(person) { 
@@ -65,8 +65,8 @@ function MyApp() {
       return promise;
     }
     // Purpose: Make the HTTP request deletion
-    function deleteUser(id) {
-      const promise = fetch("Http://localhost:8000/users/" + id, {
+    function deleteUser(_id) {
+      const promise = fetch("Http://localhost:8000/users/" + _id, {
         method: "DELETE",
         
       }).then((response) => {
